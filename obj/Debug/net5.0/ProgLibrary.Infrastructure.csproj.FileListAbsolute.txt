@@ -1,0 +1,15 @@
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.AssemblyInfo.cs
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ProgLibrary.Infrastructure.deps.json
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ProgLibrary.Infrastructure.dll
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ref\ProgLibrary.Infrastructure.dll
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ProgLibrary.Infrastructure.pdb
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ProgLibrary.Core.dll
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\bin\Debug\net5.0\ProgLibrary.Core.pdb
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.csproj.CopyComplete
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.dll
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ref\ProgLibrary.Infrastructure.dll
+C:\Users\Progfieldadmin\source\repos\ProgLibrary.Infrastructure\obj\Debug\net5.0\ProgLibrary.Infrastructure.pdb

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "XWGtvlmV0HZ3KIu1YhujjEortS5+pzLq2tDIxNMiMrQD8O91siocptA9SQD6ri3bkfxMFE4PGs8mvTAFXsSZDA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Progfieldadmin\\source\\repos\\ProgLibrary.Infrastructure\\ProgLibrary.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Progfieldadmin\\.nuget\\packages\\automapper\\10.1.1\\automapper.10.1.1.nupkg.sha512",
+    "C:\\Users\\Progfieldadmin\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Progfieldadmin\\.nuget\\packages\\system.reflection.emit\\4.7.0\\system.reflection.emit.4.7.0.nupkg.sha512"
+  ],
+  "logs": []
+}
