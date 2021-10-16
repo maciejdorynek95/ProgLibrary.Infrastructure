@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
+using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
+using ProgLibrary.Infrastructure.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProgLibrary.Infrastructure.Services
@@ -20,17 +20,17 @@ namespace ProgLibrary.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<BookDto> GetAsync(Guid id)
+        public async Task<BookDetailsDto> GetAsync(Guid id)
         {
             var book = await _bookRepository.GetAsync(id);
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookDetailsDto>(book);
             
         }
 
-        public async Task<BookDto> GetAsync(string title)
+        public async Task<BookDetailsDto> GetAsync(string title)
         {
             var book = await _bookRepository.GetAsync(title);
-            return _mapper.Map<BookDto>(book);
+            return _mapper.Map<BookDetailsDto>(book);
         }
 
 
@@ -42,25 +42,42 @@ namespace ProgLibrary.Infrastructure.Services
 
         }
 
-        public async Task CreateAsync(Guid id, string title, string authur, DateTime deleasedDate, string description)
+        public async Task CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task AddReservationAsync(Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
-        {
-            throw new NotImplementedException();
+            var book = await _bookRepository.GetOrFailAsync(title);  
+            book = new Book(id, title, author, releasedDate, description);
+            await _bookRepository.AddAsync(book);
         }
 
 
-        public async Task UpdateAsync(Guid id, string title, string authur, DateTime deleasedDate, string description)
+        //public async Task AddReservationAsync(Guid userId, Guid bookId) -- in Edit -- !
+        //{
+        //    var book = await _bookRepository.GetAsync(bookId);
+        //    if (book == null)
+        //    {
+        //        throw new Exception($"Book o id: '{bookId}' nie istenieje");
+        //    }
+        //    book.AddReservation(userId,bookId);
+        //    await _bookRepository.UpdateAsync(book);
+        //}
+
+
+        public async Task UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            throw new NotImplementedException();
+            var book = await _bookRepository.GetOrFailAsync(title);   
+            book = await _bookRepository.GetOrFailAsync(id);   
+            book.SetTitle(title);
+            book.SetAuthor(author);
+            book.SetDescription(description);
+            book.SetReleasedDate(releasedDate);
+            await _bookRepository.UpdateAsync(book);
         }
 
-        public Task RemoveAsync(Guid id)
+
+        public async Task DeleteAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var book = await _bookRepository.GetOrFailAsync(id);
+            await _bookRepository.DeleteAsync(book);
         }
 
      

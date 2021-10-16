@@ -22,12 +22,12 @@ namespace ProgLibrary.Infrastructure.Repositories
             var reservations = _reservations.AsEnumerable();
             if (reservations != null)
             {
-                reservations = reservations.Where(b => b.Book.Equals(book));
+                reservations = reservations.Where(b => b.BookId.Equals(book));
             }
             return await Task.FromResult(reservations);
         }
 
-        public async Task AddASync(Reservation reservation)
+        public async Task AddAsync(Reservation reservation)
          => await Task.FromResult(_reservations.Add(reservation));
 
         public async Task DeleteAsync(Reservation reservation)
