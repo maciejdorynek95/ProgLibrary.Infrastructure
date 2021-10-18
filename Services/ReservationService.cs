@@ -18,28 +18,38 @@ namespace ProgLibrary.Infrastructure.Services
             _mapper = mapper;
         }
 
-        public async Task<ReservationDto> GetAsync(Guid id)
-        {
-            var resevation = await _reservationRepository.GetAsync(id);
-            return _mapper.Map<ReservationDto>(resevation);
-
-        }
-
-        public Task<ReservationDto> GetAsyncBookId(Guid bookId)
+        public Task<IEnumerable<ReservationDto>> GetAsyncReservations(string bookTitle)
         {
             throw new NotImplementedException();
 
         }
-        public async Task<IEnumerable<ReservationDto>> BrowseAsync(Book book)
+
+        public Task<ReservationDto> GetAsyncBookReservation(Guid bookId)
         {
-            var reservations = await _reservationRepository.BrowseAsync(book);
+            throw new NotImplementedException();
+
+        }     
+
+        public async Task<IEnumerable<ReservationDto>> GetAsyncUserReservations(Guid id)
+        {
+            var resevations = await _reservationRepository.GetAsyncReservations(id);
+            return _mapper.Map<IEnumerable<ReservationDto>>(resevations);
+
+        }
+
+       
+        public async Task<IEnumerable<ReservationDto>> BrowseAsync(string bookTitle)
+        {
+            var reservations = await _reservationRepository.BrowseAsync(bookTitle);
 
             return _mapper.Map<IEnumerable<ReservationDto>>(reservations);
         }
 
-        public Task CreateAsync(Guid id, Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo, DateTime ReservationDate)
+        public async Task CreateAsync(Guid id, Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo, DateTime ReservationTime)
         {
-            throw new NotImplementedException();
+            var reservation = await _reservationRepository.GetAsyncReservation(id);
+            reservation = new Reservation(id, userId, bookId, ReservationTimeFrom, ReservationTimeTo);
+            await _reservationRepository.AddAsync(reservation);
         }
     
    

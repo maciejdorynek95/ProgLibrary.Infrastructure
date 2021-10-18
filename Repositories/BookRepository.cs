@@ -16,13 +16,7 @@ namespace ProgLibrary.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        //private static readonly ISet<Book> _books = new HashSet<Book>()
-        //{
-        //    new Book(Guid.NewGuid(),"Pan Tadeusz","Adam Mickiewicz",DateTime.Parse("31.03.1975"),"Książka o ....1"),
-        //    new Book(Guid.NewGuid(),"Lalka","Bolesław Prus",DateTime.Parse("22.06.1977"),"Książka o ....2"),
-        //    new Book(Guid.NewGuid(),"Ksiazka 1","Adam 1",DateTime.Parse("31.03.1995"),"Książka o ....3"),
-        //    new Book(Guid.NewGuid(),"Ksiazka 2","Adam 2",DateTime.Parse("31.03.1995"),"Książka o ....4"),
-        //};
+
 
         public async Task<Book> GetAsync(Guid id)
         => await Task.FromResult(_dbContext.Books.SingleOrDefault(x => x.Id == id));
@@ -44,21 +38,24 @@ namespace ProgLibrary.Infrastructure.Repositories
 
         public async Task AddAsync(Book book)
         {
-            await Task.FromResult(_dbContext.Books.AddAsync(book));
-            await Task.FromResult(_dbContext.SaveChangesAsync());
+            await _dbContext.Books.AddAsync(book);
+            await _dbContext.SaveChangesAsync();
            
         }
         
 
         public async Task UpdateAsync(Book book)
         {
-            _dbContext.Books.Update(book); // zamienic na Upadte z sql
+             _dbContext.Books.Update(book); // zamienic na Upadte z sql
             await _dbContext.SaveChangesAsync();
             await Task.CompletedTask;
         }
 
         public async Task DeleteAsync(Book book)
-        => await Task.FromResult(_dbContext.Remove(book));
+        {
+            await Task.FromResult(_dbContext.Remove(book));
+            await _dbContext.SaveChangesAsync();
+        }
 
         
     }

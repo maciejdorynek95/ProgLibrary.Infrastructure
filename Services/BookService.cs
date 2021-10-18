@@ -78,6 +78,7 @@ namespace ProgLibrary.Infrastructure.Services
         {
             var book = await _bookRepository.GetOrFailAsync(id);
             await _bookRepository.DeleteAsync(book);
+       
         }
 
      

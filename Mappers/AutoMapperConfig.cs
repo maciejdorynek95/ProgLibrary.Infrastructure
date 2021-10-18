@@ -10,8 +10,8 @@ namespace ProgLibrary.Infrastructure.Mappers
         public static IMapper Initialize()
         => new MapperConfiguration(cfg =>
         {
-            cfg.CreateMap<Book, BookDto>()
-            .ForMember(x=>x.BooksReservations,m=>m.MapFrom(p=>p.Reservations.Count())); // wyjatek 1 
+            cfg.CreateMap<Book, BookDto>();
+            //.ForMember(x => x.BooksReservations, m => m.MapFrom(p => p..Count())); // wyjatek 1 
             cfg.CreateMap<Book, BookDetailsDto>();
             cfg.CreateMap<Reservation, ReservationDto>();
             cfg.CreateMap<User, AccountDto>();
