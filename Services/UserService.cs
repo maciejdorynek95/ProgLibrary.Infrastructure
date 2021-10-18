@@ -9,7 +9,6 @@ using ProgLibrary.Infrastructure.Services.PasswordHashers;
 using ProgLibrary.Infrastructure.Settings.JwtToken;
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,7 +54,7 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
 
-        public async Task<TokenDto>? LoginAsync(string email, string password)
+        public async Task<TokenDto> LoginAsync(string email, string password)
         {
     
    
@@ -72,38 +71,19 @@ namespace ProgLibrary.Infrastructure.Services
                     throw new UnauthorizedAccessException("Niepoprawne dane logowania");
                     break;
                 case PasswordVerificationResult.Success:
-
-
-                    //var Base64Pas = System.Convert.ToBase64String(Encoding.ASCII.GetBytes(password));
-                    //var Base64Email = System.Convert.ToBase64String(Encoding.ASCII.GetBytes(user.Email));
-                    
-                    _httpContext.HttpContext.Session.Set("PLU", Encoding.ASCII.GetBytes(user.Email));
-                    _httpContext.HttpContext.Session.Set("PLP", Encoding.ASCII.GetBytes(password));
-
-                 
-                    //test
-                        var userClaims = _httpContext.HttpContext.User.Claims.ToList();
-                    userClaims.Add(new Claim("Email",user.Email ));
-                    userClaims.Add(new Claim("UserName",user.UserName));
-                    //test
-
-
-                    /// test
-                    var name = _httpContext.HttpContext.User.Claims.Where(p => p.Value == user.Email).FirstOrDefault();
-
                     var assignedRoles = await _userManager.GetRolesAsync(user);
                     var userRoleString = await _roleManager.FindByNameAsync(assignedRoles.FirstOrDefault());
-                    // test
-                    
+                    //// test
+
                     var jwt = _jwtHandler.CreateToken(user.Id, userRoleString.Name);
-                    
 
+                    if (_httpContext.HttpContext.Session.IsAvailable)
+                    {
+                        _httpContext.HttpContext.Session.Set("Token", Encoding.ASCII.GetBytes(jwt.Token));
 
+                        await _httpContext.HttpContext.Session.CommitAsync();
+                    }
 
-
-                    _httpContext.HttpContext.Session.Set("PLT", Encoding.ASCII.GetBytes(jwt.Token));
-                    _httpContext.HttpContext.Session.Set("PLE", Encoding.ASCII.GetBytes(jwt.Expires.ToString()));
-                    _httpContext.HttpContext.Session.CommitAsync();
 
                     return new TokenDto
                     {
@@ -112,6 +92,8 @@ namespace ProgLibrary.Infrastructure.Services
                         Role = userRoleString.Name // zmienic
 
                     };
+
+
                 case PasswordVerificationResult.SuccessRehashNeeded:
                     throw new Exception("Wymagane ponowne wygenerowanie hasła");
                 default:
