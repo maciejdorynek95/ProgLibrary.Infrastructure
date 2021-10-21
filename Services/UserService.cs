@@ -4,61 +4,57 @@ using Microsoft.AspNetCore.Identity;
 using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
-using ProgLibrary.Infrastructure.Extensions;
-using ProgLibrary.Infrastructure.Services.PasswordHashers;
 using ProgLibrary.Infrastructure.Settings.JwtToken;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace ProgLibrary.Infrastructure.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
+        private  IUserRepository _userRepository;
         private readonly IJwtHandler _jwtHandler;
         private readonly IMapper _mapper;
-        private readonly RoleManager<Role> _roleManager;
-        private readonly IBcryptPasswordHasherService _passwordHasher;
-        private readonly UserManager<User> _userManager;
-        private IHttpContextAccessor _httpContext;
+        private  RoleManager<Role> _roleManager;
+        private  UserManager<User> _userManager;
+        private  IHttpContextAccessor _httpContext;
 
-        private IdentityUserRole<Guid> _identityUserRole;
+
 
         public UserService(IUserRepository userRepository, IJwtHandler jwtHandler, IMapper mapper,
-            IBcryptPasswordHasherService passwordHasher, IdentityUserRole<Guid> identityUserRole,
-            RoleManager<Role> roleManager, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
+                UserManager<User> userManager, RoleManager<Role> roleManager,
+                IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
-            _mapper = mapper;
-            _passwordHasher = passwordHasher;
-            _identityUserRole = identityUserRole;
+            _mapper = mapper;     
             _roleManager = roleManager;
-            _userManager = userManager;
             _httpContext = httpContextAccessor;
+            _userManager = userManager;
         }
 
         public async Task<AccountDto> GetAccountAsync(Guid userId)
         {
-            var user = await _userRepository.GetOrFailAsync(userId);
-            return _mapper.Map<AccountDto>(user);
+       
+            var user = await _userRepository.GetAsync(userId);          
+            return _mapper.Map<AccountDetailsDto>(user);
         }
 
         public async Task<AccountDto> GetAccountAsync(string email)
         {
-            var user = await _userRepository.GetOrFailAsync(email);
-
-            return _mapper.Map<AccountDto>(user);
+            var user = await _userRepository.GetAsync(email);
+           
+            return _mapper.Map<AccountDetailsDto>(user);
         }
 
 
         public async Task<TokenDto> LoginAsync(string email, string password)
-        {
-    
-   
-            var user = await _userRepository.GetAsync(email);
+        {            
+            var user = await _userRepository.GetAsync(email.ToLowerInvariant());
             if (user == null)
             {
                 throw new Exception("Niepoprawne dane logowania");
@@ -69,69 +65,62 @@ namespace ProgLibrary.Infrastructure.Services
             {
                 case PasswordVerificationResult.Failed:
                     throw new UnauthorizedAccessException("Niepoprawne dane logowania");
-                    break;
-                case PasswordVerificationResult.Success:
-                    var assignedRoles = await _userManager.GetRolesAsync(user);
-                    var userRoleString = await _roleManager.FindByNameAsync(assignedRoles.FirstOrDefault());
-                    //// test
-
-                    var jwt = _jwtHandler.CreateToken(user.Id, userRoleString.Name);
-
+              
+                case PasswordVerificationResult.Success:             
                     if (_httpContext.HttpContext.Session.IsAvailable)
                     {
+                        var assignedRoles = await _userManager.GetRolesAsync(user);
+                        var jwt = _jwtHandler.CreateToken(user.Id, assignedRoles);
                         _httpContext.HttpContext.Session.Set("Token", Encoding.ASCII.GetBytes(jwt.Token));
-
                         await _httpContext.HttpContext.Session.CommitAsync();
+                        return new TokenDto
+                        {
+                            Token = jwt.Token,
+                            Expires = jwt.Expires,
+                            Role = String.Join(", ", assignedRoles) // zmienic
+                        };
                     }
-
-
-                    return new TokenDto
-                    {
-                        Token = jwt.Token,
-                        Expires = jwt.Expires,
-                        Role = userRoleString.Name // zmienic
-
-                    };
-
+                    throw new Exception("Sesja jest niedostępna");
 
                 case PasswordVerificationResult.SuccessRehashNeeded:
                     throw new Exception("Wymagane ponowne wygenerowanie hasła");
                 default:
                     return new TokenDto
                     {
-                        Token = null,
+                        Token = "Błąd generowania tokenu",
                         Expires = 0,
                         Role = null
-                    };
-                              
+                    };                             
             }
         }
 
 
         public async Task RegisterAsync(Guid userId, string email, string name, string password, string role = "user")  // domyślnie jest to  'user'
         {
-            var user = await _userRepository.GetAsync(email);
-            if (!await _roleManager.RoleExistsAsync(role))
-            {
-                throw new Exception($"Rola o nazwie: '{role}' nie istnieje");
-            }
 
-            //var identityRole  = await _roleManager.FindByNameAsync(role);
+
+            var user = await _userManager.FindByEmailAsync(email);
+                
             if (user != null)
             {
                 throw new Exception($"Użytkownik o mailu: '{email}' już istnieje");
             }
-            // password = _passwordHasher.HashPassword(password);
-            user = new User(userId, name, email);
-            Task.FromResult(await _userManager.CreateAsync(user, password));
-            Task.FromResult(await _userManager.AddToRoleAsync(user, role));
+
+            if (!await _roleManager.RoleExistsAsync(role))
+            {
+             
+                throw new Exception($"Rola o nazwie: '{role}' nie istnieje");
+            }          
+           
+            user = new User(userId, name, email);          
+            await _userRepository.AddAsync(user, password, role);
             await Task.CompletedTask;
-
-
-
-
         }
 
+        public async Task<IEnumerable<ReservationDto>> GetUserReservations(Guid userId)
+        {
+            var userBooks = await _userRepository.GetUserReservations(userId);
+            return _mapper.Map<IEnumerable<ReservationDto>>(userBooks);
+        }
     }
-
 }

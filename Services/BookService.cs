@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
@@ -41,25 +42,14 @@ namespace ProgLibrary.Infrastructure.Services
             return _mapper.Map<IEnumerable<BookDto>>(books);
 
         }
-
+       
+        [Authorize("HasAdminRole")]
         public async Task CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            var book = await _bookRepository.GetOrFailAsync(title);  
-            book = new Book(id, title, author, releasedDate, description);
+            await _bookRepository.GetOrFailAsync(title);   // kurwa ale głupie...
+            var book = new Book(id, title, author, releasedDate, description);
             await _bookRepository.AddAsync(book);
         }
-
-
-        //public async Task AddReservationAsync(Guid userId, Guid bookId) -- in Edit -- !
-        //{
-        //    var book = await _bookRepository.GetAsync(bookId);
-        //    if (book == null)
-        //    {
-        //        throw new Exception($"Book o id: '{bookId}' nie istenieje");
-        //    }
-        //    book.AddReservation(userId,bookId);
-        //    await _bookRepository.UpdateAsync(book);
-        //}
 
 
         public async Task UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)

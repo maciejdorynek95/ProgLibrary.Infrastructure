@@ -1,5 +1,6 @@
 ﻿using ProgLibrary.Infrastructure.DTO;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ProgLibrary.Infrastructure.Services
@@ -11,8 +12,7 @@ namespace ProgLibrary.Infrastructure.Services
         Task RegisterAsync(Guid userId, string email, string name,
             string password, string role = "user");
         Task<TokenDto> LoginAsync(string email, string password);
-
-     
-
+        Task<IEnumerable<ReservationDto>> GetUserReservations(Guid userId);
+      
     }
 }

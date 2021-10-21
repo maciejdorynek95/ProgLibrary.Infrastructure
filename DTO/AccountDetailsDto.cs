@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ProgLibrary.Infrastructure.DTO
 {
-    public class AccountDto
+    public class AccountDetailsDto : AccountDto
     {
-        public Guid Id { get; set; }
-        public string Email { get;  set; }
+        public string[] Roles { get; set; }
     }
 }
