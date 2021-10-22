@@ -46,7 +46,7 @@ namespace ProgLibrary.Infrastructure.Services
         [Authorize("HasAdminRole")]
         public async Task CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            await _bookRepository.GetOrFailAsync(title);   // kurwa ale głupie...
+            await _bookRepository.GetOrFailAsync(title);  
             var book = new Book(id, title, author, releasedDate, description);
             await _bookRepository.AddAsync(book);
         }

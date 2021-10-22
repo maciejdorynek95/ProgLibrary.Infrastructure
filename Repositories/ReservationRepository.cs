@@ -11,33 +11,43 @@ namespace ProgLibrary.Infrastructure.Repositories
 {
     public class ReservationRepository : IReservationRepository
     {
-        private  LibraryDbContext _context;
+        private  readonly LibraryDbContext _context;
+        private readonly AuthenticationDbContext _authenticationDb;
 
-        public ReservationRepository(LibraryDbContext context)
+        public ReservationRepository(LibraryDbContext context, AuthenticationDbContext authenticationDb)
         {
             _context = context;
+            _authenticationDb = authenticationDb;
         }
 
-        public async Task<IEnumerable<Reservation>> BrowseAsync(string bookTitle = "")
+  
+        public async Task<Reservation> GetAsync(Guid reservationId)
+         => await Task.FromResult(_context.Reservations.Where(x => x.Id == reservationId).FirstOrDefault());
+
+        public async Task<Reservation> GetAsyncByBook(Guid bookId)
+         =>  await Task.FromResult(_context.Reservations.Where(x => x.BookId == bookId).FirstOrDefault());
+
+        public async Task<Reservation> GetAsyncByUser(Guid userId)
+         => await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId).FirstOrDefault());
+
+        public async Task<IEnumerable<Reservation>> BrowseAsync(string email = "")
         {
-            var reservations = _context.Reservations.AsEnumerable();
-            var book = _context.Books.Where(b => b.Title == bookTitle).FirstOrDefault();          
-            if (!string.IsNullOrWhiteSpace(bookTitle))
+
+            var reservations = _context.Reservations.Where(r => r.User.Email == email);
+
+      
+            if (!string.IsNullOrWhiteSpace(email))
             {
-                reservations = reservations.Where(x => x.BookId == book.Id);            
+                reservations = reservations.Where(x => x.User.Email == email);
             }
             return await Task.FromResult(reservations);
         }
 
-        public async Task<Reservation> GetAsyncReservation(Guid bookId)
-         => await Task.FromResult(_context.Reservations.Where(x => x.BookId == bookId).FirstOrDefault());
+        public async Task<IEnumerable<Reservation>> GetAsyncListByUser(Guid userId)
+        => await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId));
 
-        public async Task<Reservation> GetAsyncReservationByUser(Guid userId)
-         => await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId).FirstOrDefault());
-
-
-        public async Task<List<Reservation>> GetAsyncReservations(Guid userId)
-        => await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId).ToList());
+        public async Task<IEnumerable<Reservation>> GetAsyncListByBook(Guid bookId)
+        => await Task.FromResult(_context.Reservations.Where(x => x.BookId == bookId));
 
         public async Task AddAsync(Reservation reservation)
         {

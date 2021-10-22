@@ -59,6 +59,25 @@ namespace ProgLibrary.Infrastructure.Extensions
 
         }
 
+        public static async Task<Reservation> GetOrFailAsync(this IReservationRepository reservationRepository, Guid id)
+        {
+            var reservation = await reservationRepository.GetAsyncByBook(id);
+            if (reservation == null)
+            {
+                throw new Exception($"Użytkownik o id: '{id}' nie istenieje");
+            }
+            return reservation;
+        }
+
+        public static async Task<IEnumerable<Reservation>> GetListOrFailAsync(this IReservationRepository reservationRepository, Guid id)
+        {
+            var reservations = await reservationRepository.GetAsyncListByBook(id);
+            if (reservations == null)
+            {
+                throw new Exception($"Użytkownik o id: '{id}' nie istenieje");
+            }
+            return reservations;
+        }
 
 
     }

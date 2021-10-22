@@ -13,7 +13,7 @@ namespace ProgLibrary.Infrastructure.DTO
         public Guid BookId { get;  set; }
         public DateTime ReservationTimeFrom { get; set; }
         public DateTime ReservationTimeTo { get; set; }
-        public DateTime ReservationDate { get; set; }
+        public DateTime CreatedAt { get; set; }
 
     }
 }

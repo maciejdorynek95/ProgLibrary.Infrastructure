@@ -53,11 +53,16 @@ namespace ProgLibrary.Infrastructure.Services
 
 
         public async Task<TokenDto> LoginAsync(string email, string password)
-        {            
+        {
+            if (email == null)
+            {
+                throw new UnauthorizedAccessException("Nie podano adresu e-mail");
+            }
+
             var user = await _userRepository.GetAsync(email.ToLowerInvariant());
             if (user == null)
             {
-                throw new Exception("Niepoprawne dane logowania");
+                throw new UnauthorizedAccessException("Niepoprawne dane logowania");
             }
 
             var verification = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
