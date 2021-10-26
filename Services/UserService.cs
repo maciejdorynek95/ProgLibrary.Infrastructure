@@ -76,8 +76,8 @@ namespace ProgLibrary.Infrastructure.Services
                     {
                         var assignedRoles = await _userManager.GetRolesAsync(user);
                         var jwt = _jwtHandler.CreateToken(user.Id, assignedRoles);
-                        _httpContext.HttpContext.Session.Set("Token", Encoding.ASCII.GetBytes(jwt.Token));
-                        await _httpContext.HttpContext.Session.CommitAsync();
+                        //_httpContext.HttpContext.Session.Set("Token", Encoding.ASCII.GetBytes(jwt.Token));
+                        //await _httpContext.HttpContext.Session.CommitAsync();
                         return new TokenDto
                         {
                             Token = jwt.Token,

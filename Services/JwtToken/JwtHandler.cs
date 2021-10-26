@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ProgLibrary.Infrastructure.DTO;
 using ProgLibrary.Infrastructure.Extensions;
@@ -6,19 +7,30 @@ using ProgLibrary.Infrastructure.Settings.JwtToken;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+
 namespace ProgLibrary.Infrastructure.Services.JwtToken
 {
     public class JwtHandler : IJwtHandler
     {
-        //private static JwtSettings settings;
-        //public static JwtSettings Settings { set { settings = value; } }
 
         private readonly JwtSettings _jwtSettings;
-        public JwtHandler(IOptions<JwtSettings> jwtSettings)
+        public JwtHandler(IOptions<JwtSettings> jwtSettings )
         {
             _jwtSettings = jwtSettings.Value;
+        }
+
+        public async Task<HttpClient> AddTokenToHeader(HttpClient httpClient,HttpContext httpContext)
+        {
+            if (httpContext.Session.GetString("Token") != null)
+            {
+                 httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer",  httpContext.Session.GetString("Token"));
+
+            }
+            return await Task.FromResult(httpClient);
         }
 
         public JwtDto CreateToken(Guid userId, IEnumerable<string> roles)
