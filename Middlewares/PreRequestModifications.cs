@@ -27,13 +27,6 @@ namespace ProgLibrary.Infrastructure.Middlewares
 
         private void ModifyRequest(HttpContext httpContext)
         {
-            //var a =  _headers.Authorization = new AuthenticationHeaderValue("Bearer", httpContext.Session.GetString("Token"));
-
-            //httpContext.Request.Headers.Add("Authorization", "Bearer " + HttpContext.Session.GetString("Token"));
-            //var items = httpContext.Items.Values;
-            ////httpContext.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Session.GetString("Token"));
-
-
 
         }
     }
