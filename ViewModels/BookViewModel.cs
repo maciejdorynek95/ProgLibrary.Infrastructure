@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ProgLibrary.Infrastructure.DTO
+namespace ProgLibrary.Infrastructure.ViewModels
 {
-    public class BookDto
+    public class BookViewModel
     {
 
         public Guid Id { get; set; } 

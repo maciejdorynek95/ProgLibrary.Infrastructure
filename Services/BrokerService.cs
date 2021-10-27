@@ -28,7 +28,7 @@ namespace ProgLibrary.Infrastructure.Services
         {
             
             var client = _httpClientFactory.CreateClient("api");
-            client = await _jwtHandler.AddTokenToHeader(client, httpContext);
+                client = await _jwtHandler.AddTokenToHeader(client, httpContext);
             
             _logger.LogInformation($"Client: {client.DefaultRequestHeaders}");
             return client;
