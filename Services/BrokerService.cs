@@ -44,7 +44,7 @@ namespace ProgLibrary.Infrastructure.Services
         public async Task<HttpResponseMessage> SendJsonAsync<T>(HttpClient httpClient, string action,T command)
         {
             var response = await httpClient.PostAsJsonAsync(action, command);
-            
+            response.EnsureSuccessStatusCode();
             _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
             return response;
         }
