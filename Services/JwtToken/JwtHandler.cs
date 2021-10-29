@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ProgLibrary.Core.Domain;
 using ProgLibrary.Infrastructure.DTO;
 using ProgLibrary.Infrastructure.Extensions;
 using ProgLibrary.Infrastructure.Settings.JwtToken;
@@ -33,16 +34,20 @@ namespace ProgLibrary.Infrastructure.Services.JwtToken
             return await Task.FromResult(httpClient);
         }
 
-        public JwtDto CreateToken(Guid userId, IEnumerable<string> roles)
+        public JwtDto CreateToken(User user, IEnumerable<string> roles)
         {
             var now = DateTime.Now;
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, "ProgLibrary|" + user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Name, user.Email.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // unikalny id tokena
-                new Claim(JwtRegisteredClaimNames.Iat, now.ToTimeStamp().ToString()) // data wydania tokena
-
+                new Claim(JwtRegisteredClaimNames.Iat, now.ToTimeStamp().ToString()), // data wydania tokena
+                new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.Email,user.Email)
+           
             };foreach (var role in roles) {claims.Add(new Claim(ClaimTypes.Role, role));}
 
 

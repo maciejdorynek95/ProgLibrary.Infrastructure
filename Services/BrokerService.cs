@@ -20,16 +20,14 @@ namespace ProgLibrary.Infrastructure.Services
             _logger = logger;
         }
         /// <summary>
-        /// Create HttpClient with JWT Token
+        /// Create HttpClient with JWT Token from session
         /// </summary>
         /// <param name="httpContext"></param>
         /// <returns></returns>
         public async Task<HttpClient> Create(HttpContext httpContext)
-        {
-            
+        {          
             var client = _httpClientFactory.CreateClient("api");
-                client = await _jwtHandler.AddTokenToHeader(client, httpContext);
-            
+            client = await _jwtHandler.AddTokenToHeader(client, httpContext);
             _logger.LogInformation($"Client: {client.DefaultRequestHeaders}");
             return client;
         }
@@ -41,11 +39,25 @@ namespace ProgLibrary.Infrastructure.Services
         /// <param name="action"></param>
         /// <param name="command"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> SendJsonAsync<T>(HttpClient httpClient, string action,T command)
+        public async Task<HttpResponseMessage> SendJsonPostAsync<T>(HttpClient httpClient, string action,T command)
         {
             var response = await httpClient.PostAsJsonAsync(action, command);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
+            }
+            response.EnsureSuccessStatusCode();          
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> SendJsonGetAsync<T>(HttpClient httpClient, string action, T command)
+        {
+            var response = await httpClient.GetFromJsonAsync(action, command);
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
+            }
             response.EnsureSuccessStatusCode();
-            _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
             return response;
         }
     }

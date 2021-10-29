@@ -37,7 +37,7 @@ namespace ProgLibrary.Infrastructure.Repositories
 
         public async Task<User> GetAsync(string email)
         {
-            var user = await Task.FromResult(_userManager.Users.SingleOrDefault(x => x.Email == email));
+            var user = await Task.FromResult(_userManager.Users.Where(x => x.Email == email).FirstOrDefault());
             if (user != null)
             {
                 user.SetRoles(_userManager.GetRolesAsync(user).Result.ToArray());

@@ -15,14 +15,14 @@ namespace ProgLibrary.Infrastructure.Services
 {
     public class UserService : IUserService
     {
-        private  readonly IUserRepository _userRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IJwtHandler _jwtHandler;
         private readonly IMapper _mapper;
-        private  RoleManager<Role> _roleManager;
-        private  UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
+        private readonly UserManager<User> _userManager;
         private readonly IHttpContextAccessor _httpContext;
         private readonly ILogger<UserService> _logger;
-        
+
 
 
         public UserService(IUserRepository userRepository, IJwtHandler jwtHandler, IMapper mapper,
@@ -31,7 +31,7 @@ namespace ProgLibrary.Infrastructure.Services
         {
             _userRepository = userRepository;
             _jwtHandler = jwtHandler;
-            _mapper = mapper;     
+            _mapper = mapper;
             _roleManager = roleManager;
             _httpContext = httpContextAccessor;
             _userManager = userManager;
@@ -40,7 +40,7 @@ namespace ProgLibrary.Infrastructure.Services
 
         public async Task<AccountDto> GetAccountAsync(Guid userId)
         {
-       
+
             var user = await _userRepository.GetAsync(userId);
             _logger.LogInformation($"GetAccountAsync{userId} : ", user);
             return _mapper.Map<AccountDetailsDto>(user);
@@ -60,7 +60,7 @@ namespace ProgLibrary.Infrastructure.Services
             {
                 _logger.LogInformation("Nie podano adresu e-mail");
                 throw new UnauthorizedAccessException("Nie podano adresu e-mail");
-                
+
             }
 
             var user = await _userRepository.GetAsync(email.ToLowerInvariant());
@@ -76,13 +76,13 @@ namespace ProgLibrary.Infrastructure.Services
                 case PasswordVerificationResult.Failed:
                     _logger.LogInformation("Niepoprawne dane logowania");
                     throw new UnauthorizedAccessException("Niepoprawne dane logowania");
-              
+
                 case PasswordVerificationResult.Success:
-                    _logger.LogInformation("Dane Logowania Poprawne",email,password);
+                    _logger.LogInformation("Dane Logowania Poprawne", email, password);
                     if (_httpContext.HttpContext.Session.IsAvailable)
                     {
                         var assignedRoles = await _userManager.GetRolesAsync(user);
-                        var jwt = _jwtHandler.CreateToken(user.Id, assignedRoles);
+                        var jwt = _jwtHandler.CreateToken(user, assignedRoles);
                         return new TokenDto
                         {
                             Token = jwt.Token,
@@ -101,7 +101,7 @@ namespace ProgLibrary.Infrastructure.Services
                         Token = "Błąd generowania tokenu",
                         Expires = 0,
                         Role = null
-                    };                             
+                    };
             }
         }
 
@@ -111,7 +111,7 @@ namespace ProgLibrary.Infrastructure.Services
 
 
             var user = await _userManager.FindByEmailAsync(email);
-                
+
             if (user != null)
             {
                 _logger.LogInformation($"Użytkownik o mailu: '{email}' już istnieje");
@@ -122,8 +122,8 @@ namespace ProgLibrary.Infrastructure.Services
             {
                 _logger.LogInformation($"Rola o nazwie: '{role}' nie istnieje");
                 throw new Exception($"Rola o nazwie: '{role}' nie istnieje");
-            }          
-           
+            }
+
             user = new User(userId, name, email);
             _logger.LogInformation($"Utworzono User : '{role}' ");
             await _userRepository.AddAsync(user, password, role);
