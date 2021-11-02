@@ -31,7 +31,7 @@ namespace ProgLibrary.Infrastructure.Repositories
             {
                 throw new Exception($"użytkownik o id {id} nie istenieje");
             }
-            user.SetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
+            user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
             return user;
         }
 
@@ -40,10 +40,16 @@ namespace ProgLibrary.Infrastructure.Repositories
             var user = await Task.FromResult(_userManager.Users.Where(x => x.Email == email).FirstOrDefault());
             if (user != null)
             {
-                user.SetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
+                user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
             }
             return user;
 
+        }
+
+        public async Task<IEnumerable<User>> BrowseAsync(string role = "user")
+        {
+            var users = await _userManager.GetUsersInRoleAsync(role);
+            return await Task.FromResult(users);
         }
 
         public async Task<IEnumerable<Reservation>> GetUserReservations(Guid userId)

@@ -9,6 +9,7 @@ namespace ProgLibrary.Infrastructure.Services
     {
         Task<AccountDto> GetAccountAsync(Guid userId);
         Task<AccountDto> GetAccountAsync(string userEmail);
+        Task<IEnumerable<AccountDto>> BrowseAsync(string role);
         Task RegisterAsync(Guid userId, string email, string name,
             string password, string role = "user");
         Task<TokenDto> LoginAsync(string email, string password);

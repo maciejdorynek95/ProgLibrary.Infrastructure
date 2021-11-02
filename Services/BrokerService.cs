@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using ProgLibrary.Infrastructure.Settings.JwtToken;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -41,24 +42,16 @@ namespace ProgLibrary.Infrastructure.Services
         /// <returns></returns>
         public async Task<HttpResponseMessage> SendJsonPostAsync<T>(HttpClient httpClient, string action,T command)
         {
-            var response = await httpClient.PostAsJsonAsync(action, command);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
-            }
-            response.EnsureSuccessStatusCode();          
-            return response;
+           var response = await httpClient.PostAsJsonAsync(action, command);
+            _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
+            return response.EnsureSuccessStatusCode();
         }
 
-        public async Task<HttpResponseMessage> SendJsonGetAsync<T>(HttpClient httpClient, string action, T command)
+        public async Task<HttpResponseMessage> SendJsonGetAsync<T>(HttpClient httpClient, string action,T command )
         {
-            var response = await httpClient.GetFromJsonAsync(action, command);
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogInformation($"Response: {await response.Content.ReadAsStringAsync()}");
-            }
-            response.EnsureSuccessStatusCode();
-            return response;
+            dynamic response = await httpClient.GetFromJsonAsync<T>($"{action}");
+            _logger.LogInformation($"Response: {response}");
+            return  response;
         }
     }
 }

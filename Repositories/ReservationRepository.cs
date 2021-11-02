@@ -12,12 +12,12 @@ namespace ProgLibrary.Infrastructure.Repositories
     public class ReservationRepository : IReservationRepository
     {
         private  readonly LibraryDbContext _context;
-        private readonly AuthenticationDbContext _authenticationDb;
+        private readonly AuthenticationDbContext _authenticationContext;
 
-        public ReservationRepository(LibraryDbContext context, AuthenticationDbContext authenticationDb)
+        public ReservationRepository(LibraryDbContext context, AuthenticationDbContext authenticationContext)
         {
             _context = context;
-            _authenticationDb = authenticationDb;
+            _authenticationContext = authenticationContext;
         }
 
   
@@ -33,7 +33,7 @@ namespace ProgLibrary.Infrastructure.Repositories
         public async Task<IEnumerable<Reservation>> BrowseAsync(string email = "")
         {
 
-            var reservations = _context.Reservations.Where(r => r.User.Email == email);
+            var reservations = _context.Reservations.AsEnumerable();
 
       
             if (!string.IsNullOrWhiteSpace(email))
@@ -43,11 +43,38 @@ namespace ProgLibrary.Infrastructure.Repositories
             return await Task.FromResult(reservations);
         }
 
-        public async Task<IEnumerable<Reservation>> GetAsyncListByUser(Guid userId)
-        => await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId));
 
-        public async Task<IEnumerable<Reservation>> GetAsyncListByBook(Guid bookId)
-        => await Task.FromResult(_context.Reservations.Where(x => x.BookId == bookId));
+
+        public async Task<IEnumerable<Reservation>> GetAsyncListOfReservationsByUser(Guid userId)
+        {
+            if (!_authenticationContext.Users.Where(x => x.Id == userId).Any())
+            {
+                throw new Exception($"Użytkownik o id {userId} nie istnieje");
+
+            }
+            if (!_context.Reservations.Where(x => x.UserId == userId).Any())
+            {
+                throw new Exception($"Użytkownik o id {userId} nie istnieje");
+            }
+           
+            return await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId));
+        }
+       
+
+        public async Task<IEnumerable<Reservation>> GetAsyncListOfReservationsByBook(Guid bookId)
+        {
+            if (!_context.Books.Where(x => x.Id == bookId).Any())
+            {
+                throw new Exception($"Książka o id {bookId} nie istnieje");
+
+            }
+
+            if (!_context.Reservations.Where(x=>x.BookId == bookId).Any())
+            {
+                throw new ArgumentNullException($"Brak rezerwacji dla książki o id: {bookId} ");
+            }          
+            return await Task.FromResult(_context.Reservations.Where(x => x.BookId == bookId));
+        }
 
         public async Task AddAsync(Reservation reservation)
         {

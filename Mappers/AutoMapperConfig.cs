@@ -14,20 +14,19 @@ namespace ProgLibrary.Infrastructure.Mappers
         {  
             
             /// DTO
- 
             configuration.CreateMap<Book, BookDto>()
                 .ForMember(x => x.BookReservations, m => m.MapFrom(p => p.Reservations.Count())); // wyjatek 1 
             configuration.CreateMap<Book, BookDetailsDto>()
-              .ForMember(x => x.BookReservations, m => m.MapFrom(p => p.Reservations.Count())); // wyjatek 1
-            configuration.CreateMap<Reservation, ReservationDto>();
+                .ForMember(x => x.BookReservations, m => m.MapFrom(p => p.Reservations.Count())); // wyjatek 1
             configuration.CreateMap<User, AccountDto>();
             configuration.CreateMap<User, AccountDetailsDto>();
-
+            configuration.CreateMap<Reservation, ReservationDto>();
 
             /// ViewModel
             configuration.CreateMap<BookDto, BookViewModel>();    
             configuration.CreateMap<BookDetailsDto, BookDetailsViewModel>();         
             configuration.CreateMap<AccountDto, AccountViewModel>();
+            configuration.CreateMap<ReservationDto, ReservationViewModel>();
 
         })
             .CreateMapper();

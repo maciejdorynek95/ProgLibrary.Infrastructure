@@ -9,8 +9,8 @@ namespace ProgLibrary.Infrastructure.Services
 {
     public interface IReservationService
     {
-        Task<ReservationDto> GetAsync(Guid bookId);
-        Task<IEnumerable<ReservationDto>> GetListAsync(Guid bookId);     
+        Task<ReservationDto> GetLastByBookId(Guid bookId);
+        Task<IEnumerable<ReservationDto>> GetListByBookId(Guid bookId);     
         Task<IEnumerable<ReservationDto>> BrowseAsync(string bookTitle = null);
         Task CreateAsync(Guid id, Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo );
         Task UpdateAsync(Guid id,  DateTime ReservationTimeFrom, DateTime ReservationTimeTo);

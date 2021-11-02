@@ -1,6 +1,7 @@
 ﻿using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
+using ProgLibrary.Infrastructure.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace ProgLibrary.Infrastructure.Extensions
             var book = await bookRepository.GetAsync(title);
             if (book != null)
             {
-                throw new Exception($"Książka o tytule: '{title}' już istnieje");
+                throw new BookException($"Książka o tytule: '{title}' już istnieje");
             }
             return book;
 
@@ -61,20 +62,20 @@ namespace ProgLibrary.Infrastructure.Extensions
 
         public static async Task<Reservation> GetOrFailAsync(this IReservationRepository reservationRepository, Guid id)
         {
-            var reservation = await reservationRepository.GetAsyncByBook(id);
+            var reservation = await reservationRepository.GetAsync(id);
             if (reservation == null)
             {
-                throw new Exception($"Użytkownik o id: '{id}' nie istenieje");
+                throw new Exception($"Rezerwacja o id: '{id}' nie istenieje");
             }
             return reservation;
         }
 
         public static async Task<IEnumerable<Reservation>> GetListOrFailAsync(this IReservationRepository reservationRepository, Guid id)
         {
-            var reservations = await reservationRepository.GetAsyncListByBook(id);
+            var reservations = await reservationRepository.GetAsyncListOfReservationsByBook(id);
             if (reservations == null)
             {
-                throw new Exception($"Użytkownik o id: '{id}' nie istenieje");
+                throw new Exception($"Książka o id: '{id}' nie istnieje");
             }
             return reservations;
         }

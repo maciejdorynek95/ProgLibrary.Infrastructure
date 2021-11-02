@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
@@ -35,39 +34,39 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
 
-        public async Task<IEnumerable<BookDto>> BrowseAsync(string title = null)
+        public async Task<IEnumerable<BookDto>> BrowseAsync(string title)
         {
             var books = await _bookRepository.BrowseAsync(title);
-
             return _mapper.Map<IEnumerable<BookDto>>(books);
 
         }
        
-        [Authorize("HasAdminRole")]
-        public async Task CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
+  
+        public async Task<int> CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
             await _bookRepository.GetOrFailAsync(title);  
             var book = new Book(id, title, author, releasedDate, description);
-            await _bookRepository.AddAsync(book);
+            return await _bookRepository.AddAsync(book);
+
         }
 
 
-        public async Task UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
+        public async Task<int> UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            var book = await _bookRepository.GetOrFailAsync(title);   
-            book = await _bookRepository.GetOrFailAsync(id);   
+ 
+            var book = await _bookRepository.GetOrFailAsync(id);   
             book.SetTitle(title);
             book.SetAuthor(author);
             book.SetDescription(description);
             book.SetReleasedDate(releasedDate);
-            await _bookRepository.UpdateAsync(book);
+            return await _bookRepository.UpdateAsync(book);
         }
 
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<int> DeleteAsync(Guid id)
         {
             var book = await _bookRepository.GetOrFailAsync(id);
-            await _bookRepository.DeleteAsync(book);
+            return await _bookRepository.DeleteAsync(book);
        
         }
 

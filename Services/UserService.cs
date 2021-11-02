@@ -46,6 +46,13 @@ namespace ProgLibrary.Infrastructure.Services
             return _mapper.Map<AccountDetailsDto>(user);
         }
 
+        public async Task<IEnumerable<AccountDto>> BrowseAsync(string role)
+        {
+            var users = await _userRepository.BrowseAsync(role);
+            return _mapper.Map<IEnumerable<AccountDto>>(users);
+
+        }
+
         public async Task<AccountDto> GetAccountAsync(string email)
         {
             var user = await _userRepository.GetAsync(email);

@@ -15,9 +15,6 @@ namespace ProgLibrary.Infrastructure.Repositories
         {
             _dbContext = dbContext;
         }
-
-
-
         public async Task<Book> GetAsync(Guid id)
         => await Task.FromResult(_dbContext.Books.SingleOrDefault(x => x.Id == id));
 
@@ -31,34 +28,36 @@ namespace ProgLibrary.Infrastructure.Repositories
             {
                 books = books.Where(x => x.Title.ToLowerInvariant()
                 .Contains(title.ToLowerInvariant()));
-                
+
             }
             return await Task.FromResult(books);
         }
 
-        public async Task AddAsync(Book book)
+        public async Task<int> AddAsync(Book book)
         {
 
 
             await _dbContext.Books.AddAsync(book);
-            await _dbContext.SaveChangesAsync();
-           
-        }
-        
+            return await _dbContext.SaveChangesAsync();
 
-        public async Task UpdateAsync(Book book)
+
+        }
+
+
+        public async Task<int> UpdateAsync(Book book)
         {
-             _dbContext.Books.Update(book); // zamienic na Upadte z sql
-            await _dbContext.SaveChangesAsync();
-            await Task.CompletedTask;
+            _dbContext.Books.Update(book);
+            return await _dbContext.SaveChangesAsync();
+
         }
 
-        public async Task DeleteAsync(Book book)
+        public async Task<int> DeleteAsync(Book book)
         {
-            await Task.FromResult(_dbContext.Remove(book));
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Remove(book);
+            return await _dbContext.SaveChangesAsync();
+
         }
 
-        
+
     }
 }

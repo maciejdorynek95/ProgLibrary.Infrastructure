@@ -20,37 +20,38 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
   
-        public async Task<ReservationDto> GetAsync(Guid bookId)
+        public async Task<ReservationDto> GetLastByBookId(Guid bookId)
         {
             var reservation = await _reservationRepository.GetOrFailAsync(bookId);
             return _mapper.Map<ReservationDto>(reservation);
         }
 
-        public async Task<IEnumerable<ReservationDto>> GetListAsync(Guid bookId)
-        {
-            var resevations = await _reservationRepository.GetListOrFailAsync(bookId);
-            return _mapper.Map<IEnumerable<ReservationDto>>(resevations);
-
-        }
-
         public async Task<IEnumerable<ReservationDto>> BrowseAsync(string bookTitle)
         {
             var reservations = await _reservationRepository.BrowseAsync(bookTitle);
-
             return _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+        }
+
+        public async Task<IEnumerable<ReservationDto>> GetListByBookId(Guid bookId)
+        {
+            var resevations = await _reservationRepository.GetListOrFailAsync(bookId);
+            return _mapper.Map<IEnumerable<ReservationDto>>(resevations);
         }
 
         public async Task CreateAsync(Guid id, Guid userId , Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
         {
 
-            var reservation = await _reservationRepository.GetOrFailAsync(id);
-            if (reservation != null)
+            var reservation = await _reservationRepository.GetAsync(id);
+            if (reservation == null)
             {
-                throw new Exception($"rezerwacja o id: {id} już istnieje");
+                reservation = new Reservation(id, userId, bookId, ReservationTimeFrom, ReservationTimeTo);
+                await _reservationRepository.AddAsync(reservation);
             }
-          
-            reservation = new Reservation(id, userId, bookId, ReservationTimeFrom, ReservationTimeTo);
-            await _reservationRepository.AddAsync(reservation);
+            else
+            {
+                throw new Exception("Rezerwacja już istenieje");
+            }
+         
         }  
         public async Task UpdateAsync(Guid id, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
         {
