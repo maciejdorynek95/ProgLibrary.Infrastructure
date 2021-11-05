@@ -16,7 +16,7 @@ namespace ProgLibrary.Infrastructure.Repositories
         private readonly UserManager<User> _userManager;
         private readonly LibraryDbContext _context;
 
-        public UserRepository(RoleManager<Role> roleManager, UserManager<User> userManager, LibraryDbContext context)
+        public UserRepository(UserManager<User> userManager, LibraryDbContext context)
         {
 
             _userManager = userManager;
@@ -34,6 +34,8 @@ namespace ProgLibrary.Infrastructure.Repositories
             user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
             return user;
         }
+
+  
 
         public async Task<User> GetAsync(string email)
         {
