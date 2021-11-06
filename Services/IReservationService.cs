@@ -12,9 +12,9 @@ namespace ProgLibrary.Infrastructure.Services
         Task<ReservationDto> GetLastByBookId(Guid bookId);
         Task<IEnumerable<ReservationDto>> GetListByBookId(Guid bookId);     
         Task<IEnumerable<ReservationDto>> BrowseAsync(string bookTitle = null);
-        Task CreateAsync(Guid id, Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo );
-        Task UpdateAsync(Guid id,  DateTime ReservationTimeFrom, DateTime ReservationTimeTo);
-        Task RemoveAsync(Guid id);
+        Task<IAsyncResult> CreateAsync(Guid id, Guid userId, Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo );
+        Task<IAsyncResult> UpdateAsync(Guid id,  DateTime ReservationTimeFrom, DateTime ReservationTimeTo);
+        Task<IAsyncResult> RemoveAsync(Guid id);
 
     }
 }

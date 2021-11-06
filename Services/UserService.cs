@@ -113,34 +113,47 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
 
-        public async Task RegisterAsync(Guid userId, string email, string name, string password, string role = "user")  // domyślnie jest to  'user'
+        public async Task<IdentityResult> RegisterAsync(Guid userId, string email, string password, string role = "user")  // domyślnie jest to  'user'
         {
 
 
             var user = await _userManager.FindByEmailAsync(email);
-
             if (user != null)
             {
                 _logger.LogInformation($"Użytkownik o mailu: '{email}' już istnieje");
-                throw new Exception($"Użytkownik o mailu: '{email}' już istnieje");
+                return IdentityResult.Failed(new IdentityError {Code = StatusCodes.Status226IMUsed.ToString(),Description = $"Użytkownik o mailu: '{email}' już istnieje" });
             }
-
             if (!await _roleManager.RoleExistsAsync(role))
             {
                 _logger.LogInformation($"Rola o nazwie: '{role}' nie istnieje");
-                throw new Exception($"Rola o nazwie: '{role}' nie istnieje");
+                return IdentityResult.Failed(new IdentityError { Code = StatusCodes.Status404NotFound.ToString(), Description = $"Rola o nazwie: '{role}' nie istnieje" });
             }
 
-            user = new User(userId, name, email);
+            user = new User(userId, email, email); // user name ustawiony również na email
             _logger.LogInformation($"Utworzono User : '{role}' ");
-            await _userRepository.AddAsync(user, password, role);
-            await Task.CompletedTask;
+            return await _userRepository.AddAsync(user, password, role);
+           
         }
 
         public async Task<IEnumerable<ReservationDto>> GetUserReservations(Guid userId)
         {
             var userBooks = await _userRepository.GetUserReservations(userId);
             return _mapper.Map<IEnumerable<ReservationDto>>(userBooks);
+        }
+
+        public async Task<IdentityResult> DeleteAsync (Guid userId)
+        {
+
+            var user = await _userRepository.GetAsync(userId);
+            if (user != null)
+            {
+                return _userRepository.DeleteAsync(user).Result;          
+            }
+            return IdentityResult.Failed();
+
+
+
+
         }
     }
 }

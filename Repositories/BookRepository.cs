@@ -33,29 +33,23 @@ namespace ProgLibrary.Infrastructure.Repositories
             return await Task.FromResult(books);
         }
 
-        public async Task<int> AddAsync(Book book)
+        public async Task<bool> AddAsync(Book book)
         {
-
-
             await _dbContext.Books.AddAsync(book);
-            return await _dbContext.SaveChangesAsync();
-
-
+            return Convert.ToBoolean(await _dbContext.SaveChangesAsync());
         }
 
 
-        public async Task<int> UpdateAsync(Book book)
+        public async Task<bool> UpdateAsync(Book book)
         {
             _dbContext.Books.Update(book);
-            return await _dbContext.SaveChangesAsync();
-
+            return Convert.ToBoolean(await _dbContext.SaveChangesAsync());
         }
 
-        public async Task<int> DeleteAsync(Book book)
+        public async Task<bool> DeleteAsync(Book book)
         {
             _dbContext.Remove(book);
-            return await _dbContext.SaveChangesAsync();
-
+            return Convert.ToBoolean(await _dbContext.SaveChangesAsync());
         }
 
 

@@ -65,7 +65,7 @@ namespace ProgLibrary.Infrastructure.Extensions
             var reservation = await reservationRepository.GetAsync(id);
             if (reservation == null)
             {
-                throw new Exception($"Rezerwacja o id: '{id}' nie istenieje");
+                 throw new Exception($"Rezerwacja o id:  {id} nie istenieje");
             }
             return reservation;
         }

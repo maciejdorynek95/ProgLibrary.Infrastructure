@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ProgLibrary.Core.Domain;
 using ProgLibrary.Core.Repositories;
 using ProgLibrary.Infrastructure.DTO;
@@ -12,10 +13,12 @@ namespace ProgLibrary.Infrastructure.Services
     public class ReservationService : IReservationService
     {
         private IReservationRepository _reservationRepository;
+        private IUserRepository _userRepository;
         private IMapper  _mapper;
-        public ReservationService(IReservationRepository reservationRepository, IMapper mapper)
+        public ReservationService(IReservationRepository reservationRepository, IUserRepository userRepositoryIMapper, IMapper mapper )
         {
             _reservationRepository = reservationRepository;
+            _userRepository = userRepositoryIMapper;
             _mapper = mapper;
         }
 
@@ -38,39 +41,36 @@ namespace ProgLibrary.Infrastructure.Services
             return _mapper.Map<IEnumerable<ReservationDto>>(resevations);
         }
 
-        public async Task CreateAsync(Guid id, Guid userId , Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
+        public async Task<IAsyncResult> CreateAsync(Guid id, Guid userId , Guid bookId, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
         {
-
+            if (await _userRepository.GetAsync(userId) == null)
+            {
+                return Task.FromException(new Exception("Użytkownik nie istnieje"));
+            }
+            
             var reservation = await _reservationRepository.GetAsync(id);
-            if (reservation == null)
+            if (reservation != null)
             {
-                reservation = new Reservation(id, userId, bookId, ReservationTimeFrom, ReservationTimeTo);
-                await _reservationRepository.AddAsync(reservation);
-            }
-            else
-            {
-                throw new Exception("Rezerwacja już istenieje");
-            }
-         
+                return Task.FromException(new Exception("Rezerwacja już istnieje"));
+            }   
+
+            reservation = new Reservation(id, userId, bookId, ReservationTimeFrom, ReservationTimeTo);
+            return Task.FromResult(await _reservationRepository.AddAsync(reservation));
         }  
-        public async Task UpdateAsync(Guid id, DateTime ReservationTimeFrom, DateTime ReservationTimeTo)
+
+
+        public async Task<IAsyncResult> UpdateAsync(Guid id, DateTime reservationTimeFrom, DateTime reservationTimeTo)
         {
             var reservation = await _reservationRepository.GetOrFailAsync(id);
-            if (reservation == null)
-            {
-                throw new Exception($"rezerwacja od id {id} nie istnieje");
-            }
-            await _reservationRepository.UpdateAsync(reservation);
+            reservation = new Reservation(reservation.Id, reservation.UserId, reservation.BookId, reservationTimeFrom, reservationTimeTo);
+            return Task.FromResult(await _reservationRepository.UpdateAsync(reservation));
         }
 
-        public async Task RemoveAsync(Guid id)
+
+        public async Task<IAsyncResult> RemoveAsync(Guid id)
         {
             var reservation = await _reservationRepository.GetOrFailAsync(id);
-            if (reservation == null)
-            {
-                throw new Exception($"rezerwacja od id {id} nie istnieje");
-            }          
-            await _reservationRepository.DeleteAsync(reservation);
+            return Task.FromResult(await _reservationRepository.DeleteAsync(reservation));
         }
 
      

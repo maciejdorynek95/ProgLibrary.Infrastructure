@@ -9,5 +9,6 @@ namespace ProgLibrary.Infrastructure.DTO
     public class AccountDetailsDto : AccountDto
     {
         public string[] Roles { get; set; }
+        public IEnumerable<ReservationDto> Reservations { get; set; }
     }
 }

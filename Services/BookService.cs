@@ -42,7 +42,7 @@ namespace ProgLibrary.Infrastructure.Services
         }
        
   
-        public async Task<int> CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
+        public async Task<bool> CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
             await _bookRepository.GetOrFailAsync(title);  
             var book = new Book(id, title, author, releasedDate, description);
@@ -51,7 +51,7 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
 
-        public async Task<int> UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
+        public async Task<bool> UpdateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
  
             var book = await _bookRepository.GetOrFailAsync(id);   
@@ -63,7 +63,7 @@ namespace ProgLibrary.Infrastructure.Services
         }
 
 
-        public async Task<int> DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var book = await _bookRepository.GetOrFailAsync(id);
             return await _bookRepository.DeleteAsync(book);

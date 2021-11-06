@@ -26,11 +26,12 @@ namespace ProgLibrary.Infrastructure.Repositories
 
         public async Task<User> GetAsync(Guid id)
         {
-            var user = await Task.FromResult(_userManager.Users.SingleOrDefault(x => x.Id == id));
+            var user = _userManager.Users.FirstOrDefault(x => x.Id == id);
             if (user == null)
             {
                 throw new Exception($"użytkownik o id {id} nie istenieje");
             }
+            user.GetReservations(_context);
             user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
             return user;
         }
@@ -39,10 +40,10 @@ namespace ProgLibrary.Infrastructure.Repositories
 
         public async Task<User> GetAsync(string email)
         {
-            var user = await Task.FromResult(_userManager.Users.Where(x => x.Email == email).FirstOrDefault());
+            var user = await Task.FromResult( _userManager.Users.Where(x => x.Email == email).FirstOrDefault());
             if (user != null)
             {
-                user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
+                user.GetRoles( _userManager.GetRolesAsync(user).Result.ToArray());
             }
             return user;
 
@@ -61,23 +62,22 @@ namespace ProgLibrary.Infrastructure.Repositories
         }
 
 
-        public async Task AddAsync(User user, string password, string role)
+        public async Task<IdentityResult> AddAsync(User user, string password, string role)
         {
             await _userManager.CreateAsync(user, password);
-            await _userManager.AddToRoleAsync(user, role);
-            await Task.CompletedTask;
+            return await _userManager.AddToRoleAsync(user, role);
         }
 
-        public async Task UpdateAsync(User user)
+        public async Task<IdentityResult> UpdateAsync(User user)
         {
-            await _userManager.UpdateAsync(user);
-            await Task.CompletedTask;
+            return await _userManager.UpdateAsync(user);
+
         }
 
-        public async Task DeleteAsync(User user)
+        public async Task<IdentityResult> DeleteAsync(User user)
         {
-            await _userManager.DeleteAsync(user);
-            await Task.CompletedTask;
+            return await _userManager.DeleteAsync(user);
+
         }
 
 
