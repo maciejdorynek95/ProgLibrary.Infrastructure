@@ -44,8 +44,8 @@ namespace ProgLibrary.Infrastructure.Services
   
         public async Task<bool> CreateAsync(Guid id, string title, string author, DateTime releasedDate, string description)
         {
-            await _bookRepository.GetOrFailAsync(title);  
-            var book = new Book(id, title, author, releasedDate, description);
+            await _bookRepository.GetOrFailAsync(title);
+            var book = new Book(id, title, author, releasedDate, description);        
             return await _bookRepository.AddAsync(book);
 
         }

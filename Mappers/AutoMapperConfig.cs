@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace ProgLibrary.Infrastructure.Mappers
 {
-    public static class AutoMapperConfig
+    public static class AutoMapperConfig //był typem statycznym
     {
-        public static IMapper Initialize()
+        public static  IMapper Initialize() //był typem statycznym
         => new MapperConfiguration(configuration =>
         {
 

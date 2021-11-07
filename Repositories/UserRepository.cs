@@ -26,7 +26,7 @@ namespace ProgLibrary.Infrastructure.Repositories
 
         public async Task<User> GetAsync(Guid id)
         {
-            var user = _userManager.Users.FirstOrDefault(x => x.Id == id);
+            var user = await Task.FromResult( _userManager.Users.FirstOrDefault(x => x.Id == id));
             if (user == null)
             {
                 throw new Exception($"użytkownik o id {id} nie istenieje");
@@ -41,10 +41,12 @@ namespace ProgLibrary.Infrastructure.Repositories
         public async Task<User> GetAsync(string email)
         {
             var user = await Task.FromResult( _userManager.Users.Where(x => x.Email == email).FirstOrDefault());
-            if (user != null)
+            if (user == null)
             {
-                user.GetRoles( _userManager.GetRolesAsync(user).Result.ToArray());
+                throw new Exception($"użytkownik o email {email} nie istenieje");
             }
+            user.GetReservations(_context);
+            user.GetRoles(_userManager.GetRolesAsync(user).Result.ToArray());
             return user;
 
         }
@@ -56,8 +58,10 @@ namespace ProgLibrary.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<Reservation>> GetUserReservations(Guid userId)
-        {           
-            var reservations = await Task.FromResult(new User(_context).Reservations.Where(r=>r.UserId == userId ));        
+        {
+            //var reservations = await Task.FromResult(new User(_context).Reservations.Where(r => r.UserId == userId));
+            //return reservations;
+            var reservations = await Task.FromResult(_context.Reservations.Where(x => x.UserId == userId));
             return reservations;
         }
 
